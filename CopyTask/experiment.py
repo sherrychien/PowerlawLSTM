@@ -197,64 +197,12 @@ class FunctionExperiment():
             elif epoch>200 and accu1<0.2:
                 print('model fail to converge')
                 break
-
-            # print('epoch:',epoch,', save figures!')
-
-            # torch.save(self.model.state_dict(),'./%s_T%d_e%d.pt'%(self.model_name, dataset_val.T,epoch))
-
-
-            # plt.figure()
-            # plt.plot(torch.mean(torch.Tensor(results['train_loss']), dim=1),'-r')
-            # plt.plot(results['val_loss'],'-b')
-            # plt.legend(['Train','Validation'])
-            # plt.savefig('./T1000/valloss_%s_T%d_NLL.png'%(self.model_name, dataset_val.T), dpi=100, facecolor='w', edgecolor='w',
-            #         orientation='portrait', papertype=None, format='png',
-            #         transparent=False, bbox_inches=None, pad_inches=0.1,
-            #         frameon=None, metadata=None)
-
-
-            # plt.figure()
-            # plt.plot(results['val_metric1'])
-            # plt.savefig('./T1000/Accu1_%s_T%d.png'%(self.model_name, dataset_val.T), dpi=100, facecolor='w', edgecolor='w',
-            #         orientation='portrait', papertype=None, format='png',
-            #         transparent=False, bbox_inches=None, pad_inches=0.1,
-            #         frameon=None, metadata=None)
-
-            # plt.figure()
-            # plt.plot(results['val_metric2'])
-            # plt.savefig('./T1000/Accu2_%s_T%d.png'%(self.model_name, dataset_val.T), dpi=100, facecolor='w', edgecolor='w',
-            #         orientation='portrait', papertype=None, format='png',
-            #         transparent=False, bbox_inches=None, pad_inches=0.1,
-            #         frameon=None, metadata=None)
-            
-            # with open('./T1000/CopyTask_%s_T%d.pickle'%(self.model_name,dataset_val.T), 'wb') as handle:
-            #     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-            # torch.save(self.model.state_dict(),'./%s_T%d_e%d.pt'%(self.model_name, dataset_val.T,epoch))
-
           
 
             self.epoch = epoch
 
         return results
 
-    def valid_model(self):
-        # Test the model
-        results = {
-        'test_metric1': 0.0,
-        'test_metric2': 0.0,
-        'total_loss': 0.0
-
-        }
-        self.model.eval()
-        dataset_test = self.load_data("valid")
-        dataloader_test = DataLoader(dataset_test, batch_size=self.batch_size, shuffle=False, num_workers=0)
-        self.model_setup()
-        total_metric1, total_metric2, total_loss = self.eval_model(dataloader_test)
-        print('Test metric1: ', total_metric1, 'Test metric2: ', total_metric2, 'total loss:', total_loss)
-        results['test_metric1'] = total_metric1
-        results['test_metric2'] = total_metric2
-        results['total_loss'] = total_loss
         return results
 
     def test_model(self):

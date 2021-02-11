@@ -1,4 +1,3 @@
-# from thalamus.datasets.base import Dataset
 import torch
 from pathlib import Path
 import h5py
