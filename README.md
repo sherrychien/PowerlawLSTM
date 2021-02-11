@@ -1,6 +1,8 @@
 # PowerLawLSTM
 Implementing power law gated LSTM (pLSTM) on copy task with Pytorch.
 
+The code is implemented in the paper titled "Slower is Better: Revisiting the Forgetting Mechanism in LSTM for Slower Information Decay", submitted to ICML2021
+
 ## dataset.py
 Generating training and testing datasets for the copy task. The T for the task could be flexibly adjusted to generate corresponding sequences for the task. 
 
