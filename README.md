@@ -10,5 +10,9 @@ Running the copy task experiment including the model settings, training, validat
 ## model.py
 Including LSTM and pLSTM model classes for learning copy task.
 
+## metric.py
+Metric (calculating the accuracy in this case) for evaluating the model performance on the copy task
+
+
 ## CopyTask_run.ipynb
 The main file for running the task using Jupyter notebook. Please install/import Pytorch and other required libraries along with the python files included in this zip file to run the copy task using LSTM/pLSTM.   

@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data.dataloader import DataLoader
 import pickle
-import matplotlib.pyplot as plt
 
 
 
