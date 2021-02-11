@@ -1,11 +1,12 @@
 import torch.nn as nn
 import torch
-# from scipy.stats import invgamma
 import torch.nn.functional as F
-# from util import hard_sigm
 import math as m
 from torch.autograd import Variable
 import torch.autograd.profiler as profiler
+import torch.jit as jit
+from typing import List, Tuple
+from torch.nn import Parameter
 
 
 class BaselineLSTMModel(nn.Module):
@@ -27,12 +28,6 @@ class BaselineLSTMModel(nn.Module):
         log_probs = F.log_softmax(output, dim=2)
         return log_probs, hidden
 
-from torch.nn import Parameter
-
-
-
-import torch.jit as jit
-from typing import List, Tuple
 
 
 class PowerLawCell(jit.ScriptModule):
@@ -105,50 +100,6 @@ class PowerLawCell(jit.ScriptModule):
         return h_new, (h_new, c_new, k_new)
 
 
-class PowerLawLayer(nn.Module):
-    def __init__(self, hidden_size, input_size=10, p=0.2, learn_p=False, p_range=None, uniform_init=False, epsilon=1e-3,
-                 batch_first=True, input_gate=False, device='cpu'):
-        super(PowerLawLayer, self).__init__()
-        self.batch_first = batch_first
-        self.hidden_size = hidden_size
-        self.input_size = input_size
-        self.device = device
-        self.input_gate = input_gate
-        self.p_range = p_range
-        self.uniform_init = uniform_init
-        self.p = p
-        self.learn_p = learn_p
-        self.layer1 = PowerLawCell(self.input_size, self.hidden_size, self.p, self.learn_p,
-                                   epsilon=epsilon, p_range=self.p_range, uniform_init=uniform_init, device=device)
-
-    def forward(self, inputs, hidden):
-        if self.batch_first:
-            time_steps = inputs.size(1)
-            batch_size = inputs.size(0)
-        else:
-            time_steps = inputs.size(0)
-            batch_size = inputs.size(1)
-
-        if hidden is None:
-            h_t1 = Variable(torch.zeros(batch_size, self.hidden_size, device=inputs.device), requires_grad=False)
-            c_t1 = Variable(torch.zeros(batch_size, self.hidden_size, device=inputs.device), requires_grad=False)
-            k_t1 = Variable(torch.zeros(batch_size, self.hidden_size, device=inputs.device)-1, requires_grad=False)
-            state = (h_t1, c_t1, k_t1)
-        else:
-            state = hidden
-
-        h_1 = []
-
-        if self.batch_first:
-            for t in range(time_steps):
-                out, state = self.layer1(inputs[:, t, :], t, state)
-                h_1 += [out]
-        else:
-            for t in range(time_steps):
-                out, state = self.layer1(inputs[t, :, :], t, state)
-                h_1 += [out]
-
-        return torch.stack(h_1, dim=1), state
 
 
 class PowerLawLayerAux(jit.ScriptModule):

@@ -79,7 +79,6 @@ class FunctionExperiment():
                 total_loss += val_loss.item()
                 total_metric1 += accu1
                 total_metric2 += accu2
-                # total_items += batch_size
                 total_batches += 1
         return total_metric1 / total_batches, total_metric2 / total_batches, total_loss / total_batches
 
@@ -118,9 +117,6 @@ class FunctionExperiment():
                 targets = torch.squeeze(targets).long()
                 total_loss = self.loss_function(scores.transpose(1, 2), targets)
                 total_loss.backward()
-                # for name, param in self.model.named_parameters():
-                #     if param.requires_grad:
-                #         print(name, param.grad)
 
                 if self.clip_gradients is not None:
                     _ = nn.utils.clip_grad_norm_(self.model.parameters(), self.clip_gradients)
@@ -129,15 +125,6 @@ class FunctionExperiment():
                 
                 if i_batch % self.print_steps == 0:
                     print('Batch', i_batch, 'Loss:', total_loss.item(), 'mean loss', sum(train_loss) / (i_batch + 1))
-
-                if (i_batch+1) % (batch_num//5) == 0: 
-                    plt.figure()
-                    plt.plot(train_loss)
-                    plt.legend(['Train loss'])
-                    plt.savefig(self.save_path+'/trainloss_%sNLL.png'%(self.model_name), dpi=100, facecolor='w', edgecolor='w',
-                            orientation='portrait', format='png',
-                            transparent=False, bbox_inches=None, pad_inches=0.1,
-                            metadata=None)
 
 
             self.model.eval()
@@ -155,41 +142,6 @@ class FunctionExperiment():
 
             torch.save(self.model.state_dict(),self.save_path+'/CopyTask_%s.pt'%(self.model_name))
 
-            plt.figure()
-            plt.plot(torch.mean(torch.Tensor(results['train_loss']), dim=1),'-r')
-            plt.plot(results['val_loss'],'-b')
-            plt.legend(['Train','Validation'])
-            plt.yticks(size=15)
-            plt.xlabel('# of epoch', size=15)
-            plt.ylabel('validation loss', size=15)
-            plt.tight_layout()
-            plt.savefig(self.save_path+'/valloss_%s_NLL.png'%(self.model_name), dpi=100, facecolor='w', edgecolor='w',
-                    orientation='portrait', format='png',
-                    transparent=False, bbox_inches=None, pad_inches=0.1,
-                    metadata=None)
-
-
-            plt.figure()
-            plt.plot(results['val_metric1'])
-            plt.yticks(size=15)
-            plt.xlabel('# of epoch', size=15)
-            plt.ylabel('average accuracy of predicting \n x out of 10 elements', size=15)
-            plt.tight_layout()
-            plt.savefig(self.save_path+'/Accu1_%s.png'%(self.model_name), dpi=100, facecolor='w', edgecolor='w',
-                    orientation='portrait', format='png',
-                    transparent=False, bbox_inches=None, pad_inches=0.1,
-                    metadata=None)
-
-            plt.figure()
-            plt.plot(results['val_metric2'])
-            plt.yticks(size=15)
-            plt.xlabel('# of epoch', size=15)
-            plt.ylabel('average accuracy of predicting \n all 10 elements', size=15)
-            plt.tight_layout()
-            plt.savefig(self.save_path+'/Accu2_%s.png'%(self.model_name), dpi=100, facecolor='w', edgecolor='w',
-                    orientation='portrait', format='png',
-                    transparent=False, bbox_inches=None, pad_inches=0.1,
-                    metadata=None)
 
             if  accu1 >= (1.0-1e-3) and accu2 >= (1.0-1e-3):
                 print('Convergence achieved at iteration ', epoch*len(dataloader_train)+i_batch)
@@ -198,12 +150,10 @@ class FunctionExperiment():
                 print('model fail to converge')
                 break
           
-
             self.epoch = epoch
 
         return results
 
-        return results
 
     def test_model(self):
         # Test the model

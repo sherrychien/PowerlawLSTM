@@ -1,9 +1,8 @@
 import torch
 from pathlib import Path
-import h5py
-from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data import Dataset, DataLoader
 
-class CopyTaskDataset():
+class CopyTaskDataset(Dataset):
     def __init__(self, dataset, seq_length, T=10, samples=10000, rnd_seed=None, device='cuda'):
         super(CopyTaskDataset, self).__init__()
         self.device = device
